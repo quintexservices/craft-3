@@ -1,0 +1,181 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
+
+	<link rel="stylesheet" href="/css/app.min.css">
+	<link rel="stylesheet" href="/css/slick.min.css">
+	<!-- Typekit fonts -->
+  <script type="text/javascript" src="//use.typekit.net/fzm2rbq.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+	<script src="/js/vendor/modernizr.min.js"></script>
+	<script async src="/js/vendor/picturefill.min.js"></script>
+	<!--[if lt IE 9]>
+	  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
+	  <script src="//s3.amazonaws.com/nwapi/nwmatcher/nwmatcher-1.2.5-min.js"></script>
+	  <script src="//html5base.googlecode.com/svn-history/r38/trunk/js/selectivizr-1.0.3b.js"></script>
+	  <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.1.0/respond.min.js"></script>
+	<![endif]-->
+	
+		{{ headerCode.customCode|raw }}
+</head>
+
+<body class="alt">
+<!-- HEADER -->
+<section class="header" id="header">
+    <!-- Logo and Primary Navigation -->
+    <div class="container row">
+        <div class="small-12 columns clearfix">
+            <h1><a href="{{siteUrl}}"><img src="/img/quintex-logo-rv.png" alt="Quintex" /></a></h1>
+						{% cache %}
+            <nav>
+			<!-- Fetch the main menu items -->
+			{% set menu = craft.entries.section('menu') %}
+
+			<!-- Loop through all items and display them -->
+			<ul class="nav">
+			{% nav link in menu %}
+			{% if link.customUri == "" %}
+			{% set relatedEntryUri = link.relatedEntry[0].uri|split('/') %}
+			{% endif %}
+			    <li class="{% if (link.customUri != "" and link.customUri == craft.request.firstSegment) or (link.relatedEntry|length and relatedEntryUri[0] == craft.request.firstSegment) %}active{% endif %}{% if loop.last %} start{% endif %}">
+			        {% if link.relatedEntry|length %}
+			                <a href="{{ link.relatedEntry[0].url }}">{{ link.title }}</a>
+			        {% else %}
+			                <a href="/{{ link.customUri }}">{{ link.title }}</a>
+			        {% endif %}
+
+			        {% ifchildren %}
+			            <ul>
+			                {% children %}
+			            </ul>
+			        {% endifchildren %}
+			    </li>
+			{% endnav %}
+			</ul>
+            </nav>
+						{% endcache %}
+        </div>
+    </div>        
+</section>
+
+<section class="content">
+    {% block content %}
+    {% endblock %}
+		
+		{% if (entry is not defined or entry.id != "6") %}
+		{# show if not the contact page #}
+		<!-- Get Started -->
+		<section class="get-started">
+		    <div class="row">
+		        <div class="large-11 small-centered columns">
+		            <div class="row">
+		                <div class="small-7 columns">
+		                    <h3>Great impressions start with Quintex.</h3>
+		                </div>
+		                <div class="small-5 text-right columns">
+		                    <a href="/contact" class="button rounded">Get Started</a>
+		                </div>
+		           </div>
+		        </div>
+		    </div>
+		</section>
+		{% endif %}
+</section>
+
+<!-- Footer -->
+{% cache globally %}
+<section class="footer">  
+    <footer class="row">
+        <div class="large-12 columns text-center">
+            <a href="#"><img src="/img/historical-building.png" alt="">
+            <p class="trad">{{ footer.intro }}</p></a>
+
+                        <ul class="utility">
+                			<!-- Fetch the menu items -->
+                			{% set menu = craft.entries.section('socialMenu') %}
+
+                			<!-- Output the social menu -->
+                			{% nav link in menu %}
+                			    <li>			    
+                			        {% if link.relatedEntry|length %}
+                			                <a href="{{ link.relatedEntry[0].url }}">{{ link.title }}</a>
+                			        {% else %}
+                			                <a href="{{ link.customUri }}" target="_blank">{{ link.title }}</a>
+                			        {% endif %}
+                			    </li>
+                			{% endnav %}
+                        </ul>
+            <p class="copyright">Copyright &copy; {{ now.year }} {{ siteName }}, All rights reserved<br />Phone: {{ phoneNumber.intro }} / <a href="mailto:{{ emailAddress.intro }}">{{ emailAddress.intro }}</a></p>
+
+        </div> 
+    </footer>
+{% endcache %}
+</section>
+		<!--[if lt IE 9]>
+			<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+			<![endif]-->
+		
+  <script src="/js/vendor/libraries.min.js"></script>
+
+
+	<script src="js/vendor/foundation.min.js"></script>
+
+	<script>
+		$(document).foundation();
+	</script>
+		
+<!-- Page specific Javascript -->
+{% block customJs %}
+	{# Insert Javascript from specific layouts #}
+{% endblock %}
+
+<!-- Old browser warning alert -->
+<script type="text/javascript"> 
+var $buoop = {}; 
+$buoop.ol = window.onload; 
+window.onload=function(){ 
+ try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
+ var e = document.createElement("script"); 
+ e.setAttribute("type", "text/javascript"); 
+ e.setAttribute("src", "//browser-update.org/update.js"); 
+ document.body.appendChild(e); 
+} 
+</script> 
+	
+<!-- Header resize script -->
+<script>
+
+    function init() {
+    window.addEventListener('scroll', function(e){
+        var distanceY = window.pageYOffset || document.documentElement.scrollTop,
+            shrinkOn = 150,
+            header = document.querySelector(".header");
+        if (distanceY > shrinkOn) {
+            classie.add(header,"smaller");
+        } else {
+            if (classie.has(header,"smaller")) {
+                classie.remove(header,"smaller");
+            }
+        }
+    });
+}
+    window.onload = init();
+</script>
+
+<!-- Google Analytics -->
+<script>
+    (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+    function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+    e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+    e.src='//www.google-analytics.com/analytics.js';
+    r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+    ga('create','UA-54368331-1','auto');ga('send','pageview');
+</script>
+
+</body>
+</html>

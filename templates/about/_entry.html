@@ -1,0 +1,108 @@
+{% extends "_layout" %}
+
+{% set title = entry.title %}
+
+{% block content %}
+
+<section class="section-head">
+    <div class="row">
+        <div class="small-12 small-centered columns text-center">
+            <h1>{{ entry.title }}</h1>
+        </div>
+    </div>
+</section>
+
+<section class="section-nav">
+    <div class="row">
+        <div class="small-12 small-centered columns text-center">
+        <div>
+     		{% set pages = craft.entries.section('about').level(1) %}
+            <ul class="secondary-nav">
+	    	    {% for page in pages %}
+		            <li {% if page.url == craft.request.getUrl %}class="active"{% endif %}>{{ page.getLink() }}</li>
+		        {% endfor %}
+            </ul>
+        </div>
+        </div>
+    </div>
+</section>           
+
+<section class="main-content" {% for bg in entry.backgroundImage %} style="background: url({{ bg.url }}); -webkit-background-size: cover; -o-background-size: cover; -moz-background-size: cover; background-size: cover; background-position: 50% 40%;"{% endfor %}>
+    <div class="row" id="overview">
+        <div class="medium-9 medium-centered columns text-center">
+            <h2>{{ entry.headline }}</h2>
+        </div>
+    </div>
+</section>
+
+{% if entry.type == "about" %}
+
+<section class="secondary-content">
+    <div class="row">
+        <div class="medium-11 medium-centered columns">
+            <div class="row">
+                <div class="medium-9 columns">
+						{{ entry.body }}
+
+                </div>
+                <div class="medium-3 columns aside">
+                
+                	{{ entry.sidebarContent }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% elseif entry.type == "careers" %}
+
+<section class="secondary-content">
+    <div class="row">
+        <div class="medium-11 medium-centered columns">
+            <div class="row">
+                <div class="medium-6 columns">
+                        {{ entry.body }}
+                </div>
+
+                
+
+
+
+
+              </div>            
+        </div>
+    </div>
+</section>
+
+
+{% elseif entry.type == "timeline" %}
+    
+<section class="secondary-content">
+    <div class="row">
+        <div class="medium-11 medium-centered columns">
+        {% for event in entry.timeline %}
+            {% if event.type == "timelineEvent" %}
+            <div class="row">
+                <div class="medium-3 columns text-right">
+                    <h3>{{ event.timelineYear }}</h3>
+                </div>
+                <div class="medium-9 column">
+                    {{ event.timelineText }}
+                    {% if event.timelineImage | length %}
+                        {% for image in event.timelineImage %}
+                            {{ image.getImg }}
+                        {% endfor %}
+                    {% endif %}
+                    <hr>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endif %}
+
+{% endblock %}

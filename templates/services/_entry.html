@@ -1,0 +1,69 @@
+{% extends "_layout" %}
+
+{% set title = entry.title %}
+
+{% block content %}
+
+<section class="section-head">
+    <div class="row">
+        <div class="small-12 small-centered columns text-center">
+            <h1>{{ entry.fullServiceName }}</h1>
+        </div>
+    </div>
+</section>
+
+<section class="section-nav">
+    <div class="row">
+        <div class="small-12 small-centered columns text-center">
+        <div>
+            <ul>
+
+					{% for block in entry.pageSections %}
+					    {% if block.type == "fullWidth" %}
+					        <li><a href="#{{ block.sectionName }}">{{ block.menuName }}</a></li>
+					    {% endif %}
+					{% endfor %}            	
+
+            </ul>
+        </div>
+        </div>
+    </div>
+</section>           
+
+<section class="main-content" {% for bg in entry.backgroundImage %} style="background: url({{ bg.url }}); -webkit-background-size: cover; -o-background-size: cover; -moz-background-size: cover; background-size: cover; background-position: 50% 0%;"{% endfor %}>
+    <div class="row" id="overview">
+        <div class="medium-9 medium-centered columns text-center">
+            <h2>{{ entry.headline }}</h2>
+        </div>
+    </div>
+</section>
+
+<section class="secondary-content">
+    <div class="row">
+        <div class="medium-11 medium-centered columns">
+            <div class="row">
+                <div class="medium-9 columns">
+				<p class="intro">{{ entry.intro }}</p>
+
+					{% for block in entry.pageSections %}
+					    {% if block.type == "fullWidth" %}
+					    	<div id="{{ block.sectionName }}">
+                            <h2>{{ block.menuName }}</h2>
+					        {{ block.ContentFull }}
+						    </div>
+					    {% endif %}
+					{% endfor %}
+
+                </div>
+                <div class="medium-3 columns aside">
+                
+                	{{ entry.sidebarContent }}
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+  
+{% endblock %}

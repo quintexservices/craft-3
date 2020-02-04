@@ -1,0 +1,84 @@
+{% extends "_layout" %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="slidr">
+
+        {% for block in entry.contentSlider.type('slideWithBackgroundImage') %}
+        <div>
+            {% if block.pageLink|length %}
+            <a href="{{ block.pageLink[0].getUrl}}">
+                {% elseif block.externalLink|length %}
+                <a href="{{ block.externalLink }}">
+                    {% endif %}
+                    <div style="background: url({% for image in block.backgroundImage %}{{ image.url }}{% endfor %}) no-repeat 50% 0%; -webkit-background-size: cover; -o-background-size: cover; -moz-background-size: cover; background-size: cover;" class="slidr_img"></div>
+                    <div>
+                        <div class="row text-center">
+                            <div class="small-10 large-8 small-centered columns">
+                                <h1>{{ block.headline }}</h1>
+                                <p>{{ block.introText }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% if block.pageLink|length or block.externalLink|length %}</a>{% endif %}
+        </div>
+
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Service Menu -->
+<section class="services">
+    <div class="row">
+        <div class="large-12 columns text-center">
+            <h2>{{ entry.servicesHeadline }}</h2>
+
+            {% set services = craft.entries.level(1).section('servicesList') %}
+
+            <ul>
+                {% nav service in services %}
+                <li><a href="{{ service.url }}"><div class="rounded">{% for icon in service.sectionIcon %}{{ icon.getImg() }}</div>{% endfor %}<strong>{{ service.title }}</strong></a></li>
+                {% endnav %}
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- News Listing -->
+<section class="news">
+    <div class="row">
+        <div class="small-11 large-10 small-centered columns">
+            <h4 class="text-center">Recently at Quintex</h4>
+
+            {% for entry in craft.entries.section('news').find() %}
+            <div class="row">
+                <div class="small-4 columns text-right">
+                    <p class="news-headline"><span>{{ entry.postDate.format('F d, Y') }}</span></p>
+                </div>
+                <div class="small-8 columns">
+                    <p><a href="{{ entry.url }}">{{ entry.title }}</a></p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block customJs %}
+<script src="/js/vendor/slick.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('.slidr').slick({
+      autoplay: true,
+      arrows: true,
+      dots: true,
+      lazyLoad: 'progressive',
+      speed: 1100,
+      autoplaySpeed: 20000,
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "_layout" %}
+
+
+
+{% block content %}
+{# rerouted urls that use this template need to request the specific entry based on the URL  #}
+{% set entry = craft.entries.section('catalogue').slug(craft.request.getSegment(4)).first() %}
+{# Find the categories #}
+{% set categories = craft.categories.group('productType') %}
+
+{% for entry in craft.entries.section('catalogues').limit(1) %}
+
+{# headline #}
+<section class="section-head">
+    <div class="row">
+        <div class="small-12 small-centered columns text-center">
+            <h1><a href="/{{entry.section.handle}}/{{entry.slug}}">{{entry.section}}</a></h1>
+        </div>
+    </div>
+</section>
+
+{# navigation #}
+<section class="section-nav">
+	<div class="row">
+		<div class="small-12 small-centered columns text-center">
+			<div>
+				<ul class="secondary-nav">
+					{% nav category in categories %}
+					{# Find related entries of category #}
+					{% set entries = craft.entries({
+					    section: 'catalogue',
+					    relatedTo: ['and',
+					        { targetElement: category },
+					        { sourceElement: craft.entries.section('catalogues').status(null) }
+					    ]
+					}) %}
+					{% if entries | length %}
+					<li {% if craft.request.getSegment(3) == category.slug %}class="active" {% endif %}>
+						<a href="/{{entry.section.handle}}/{{entry.slug}}/{{category.slug}}">{{ category }}</a>
+					</li>
+					{% endif %}
+					{% endnav %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+{% endfor %}
+
+{# body content #}
+<section class="secondary-content hr-top">
+	<div class="row">
+		<div class="medium-11 medium-centered columns">
+			<div class="row">
+				{# main content #}
+				<div class="{% for category in categories %}
+							{% if category.slug == craft.request.getSegment(3) %}
+							{% set entries = craft.entries.section('catalogue').relatedTo(category) %}
+							{% if entries|length > 1 %}
+							medium-9
+							{% endif %}
+							{% endif %}
+							{% endfor %}columns">
+					<div class="row">
+						{# Image #}
+						<div class="medium-5 columns text-center">
+							{% for image in entry.productImage %}
+							<picture>
+								<source srcset="
+									{{ image.getUrl('imageLarge') }} 3x,
+									{{ image.getUrl('imageMedium') }} 2x,
+									{{ image.getUrl('imageSmall') }} 1x"
+									 />
+								<img src="{{ image.getUrl('imageSmall') }}" alt="{{ entry.title }}" />
+							</picture>
+							{% endfor %}
+						</div>
+						{# basic specs #}
+						<div class="medium-7 columns">
+							<h2>{{ entry.title }}</h2>
+							{% if entry.productSwatches|length %}
+							<p class="no-space-after">Available in:</p>
+							<ul class="no-bullet swatch-list">
+								{% for block in entry.productSwatches.type('swatch') %}
+								<li>{% if block.swatchImage|length %}
+									{% for image in block.swatchImage %}
+									<img src="{{ image.url('swatchThumbs1x') }}" />
+									{% endfor %}
+									{% endif %} {{ block.swatchName }}</li>
+								{% endfor %}
+							</ul>
+							{% endif %}
+						</div>
+					</div>
+					{# description #}
+					{% if entry.productDescription|length %}
+					<div class="row hr-top">
+						<div class="small-12 medium-6 columns">
+							<ul class="tabs" data-tab>
+								<li class="tab-title active"><a href="#panel1">{% set fieldName = craft.fields.getFieldByHandle('productDescription') %}{{ fieldName }}</a></li>
+							</ul>
+							<div class="tabs-content">
+								<div class="content active" id="panel1">
+									{{ entry.productDescription }}
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					{% endif %}
+				</div>
+				{# aside content (other items) #}
+				<div class="medium-3 columns aside">
+					
+					
+					{% for category in categories %}
+					{% if category.slug == craft.request.getSegment(3) %}
+					{# Find related entries from category #}
+					{% set entries = craft.entries({
+					    section: 'catalogue',
+					    relatedTo: ['and',
+					        { targetElement: category },
+					        { sourceElement: craft.entries.section('catalogues').status(null) }
+					    ]
+					}) %}
+					{# if there is more than one entry in catogory list them #}
+					{% if entries|length > 1 %}		
+					<h4>More {{ category }}</h4>
+					{% endif %}
+					<ul>
+						{% for entry in entries %}
+						{% if entry.slug != craft.request.getSegment(4) %}
+						<li><a href="/{{craft.request.getSegment(1)}}/{{craft.request.getSegment(2)}}/{{category.slug}}/{{entry.slug}}">{{ entry.title }}</a></li>
+						{% endif %}
+						{% endfor %}
+					</ul>
+					{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

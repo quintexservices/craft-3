@@ -1,0 +1,88 @@
+{% extends "_layout" %}
+
+{% set title = "Catalogue" %}
+
+{% block content %}
+
+{# Find the categories #}
+{% set categories = craft.categories.group('productType') %}
+
+
+{% for entry in craft.entries.section('catalogue').limit(1) %}
+
+{# headline #}
+<section class="section-head">
+    <div class="row">
+        <div class="small-12 small-centered columns text-center">
+            <h1><a href="/{{entry.section.handle}}">{{entry.section}}</a></h1>
+        </div>
+    </div>
+</section>
+
+{# navigation #}
+<section class="section-nav">
+    <div class="row">
+        <div class="small-12 small-centered columns text-center">
+        <div>
+            <ul class="secondary-nav">
+    {% nav category in categories %}
+			{# Find related entries of category #}
+			{% set entries = craft.entries.section('catalogue').relatedTo(category) %}
+			{% if entries | length %}
+        <li {% if craft.request.getSegment(2) == category.slug %}class="active" {% endif %}>
+            <a href="{{ category.url }}">{{ category }}</a>
+        </li>
+			{% endif %}
+    {% endnav %}
+            </ul>
+        </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+
+{# main content #}
+<section class="secondary-content">
+    <div class="row">
+        <div class="medium-11 medium-centered columns">
+            <div class="row">
+                <div class="medium-12 columns">
+									{# Fetch all of the entries related to this category #}
+									{% set entries = craft.entries.relatedTo(category) %}
+
+									<ul class="small-block-grid-2 medium-block-grid-4 large-block-grid-5">
+									{# print the entries inside each category #}
+									{% for entry in entries %}
+						
+									<li>
+										<div class="listing-top-box text-center">
+											{% for image in entry.productImage %}
+											<a href="/{{entry.section.handle}}/{{category.slug}}/{{entry.slug}}">
+											<picture>
+												<source srcset="
+													{{ image.getUrl('thumbs2x') }} 2x,
+													{{ image.getUrl('thumbs1x') }} 1x"
+													 />
+												<img src="{{ image.getUrl('thumbs1x') }}" alt="{{ entry.title }}" />
+											</picture>
+											</a>
+											{% endfor %}
+										</div>
+										<div class="listing-bottom-box">
+									  		<h4><a href="/{{entry.section.handle}}/{{category.slug}}/{{entry.slug}}">{{ entry.title }}</a></h4>
+												{% if entry.productSwatches|length %}
+													<p class="attribute">Available in {% for block in entry.productSwatches.type('swatch') %}{% if not loop.first %}, {% endif %}{{ block.swatchName }}{% endfor %}</p>
+												{% endif %}
+										</div>
+									</li>
+						
+									{% endfor %}
+									</ul>
+									
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

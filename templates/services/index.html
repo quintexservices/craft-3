@@ -1,0 +1,36 @@
+{% extends "_layout" %}
+
+{% set title = "Services" %}
+
+{% block content %}          
+
+<section class="main-content" {% for bg in entry.backgroundImage %} style="background: url({{ bg.url }}); -webkit-background-size: cover; -o-background-size: cover; -moz-background-size: cover; background-size: cover; background-position: 50% 20%;"{% endfor %}>
+    <div class="row" id="overview">
+        <div class="medium-9 medium-centered columns text-center">
+
+        </div>
+    </div>
+</section>
+
+<section class="secondary-content">
+    <div class="row">
+        <div class="medium-11 medium-centered columns">
+            <div class="row" id="section-1">
+                <div class="medium-12 columns services services-listing text-center">
+            <h1>{{ entry.headline }}</h1>
+                                {{ entry.body }}
+
+                {% set services = craft.entries.depth(1).section('servicesList') %}
+
+                    <ul class="services-listing">
+                        {% nav service in services %}
+                            <li><a href="{{ service.url }}">{% for icon in service.sectionIcon %}{{ icon.getImg() }}{% endfor %}<strong>{{ service.title }}</strong></a></li>
+                        {% endnav %}
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
